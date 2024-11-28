@@ -1,0 +1,222 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #121722;
+    color: #e0e6ed;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+    transition: background-color 0.3s ease;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+h1, h2 {
+    color: #4a90e2;
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+h1::after, h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background-color: #4a90e2;
+}
+
+.upload-section {
+    background-color: #1e2633;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    margin-bottom: 30px;
+}
+
+.file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+input[type="file"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.file-input-label {
+    background-color: #34495e;
+    color: #ecf0f1;
+    padding: 12px 20px;
+    border-radius: 6px;
+    display: inline-block;
+    cursor: pointer;
+    margin-right: 15px;
+    transition: background-color 0.3s ease;
+}
+
+.file-input-label:hover {
+    background-color: #4a90e2;
+}
+
+.file-names {
+    color: #4a90e2;
+    margin-left: 15px;
+    font-size: 0.9em;
+}
+
+button {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+button:hover {
+    background-color: #357abd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(74, 144, 226, 0.2);
+}
+
+button:focus {
+    outline: 2px solid #4a90e2;
+    outline-offset: 2px;
+}
+
+.results-section {
+    background-color: #1e2633;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #1e2633;
+}
+
+table, th, td {
+    border: 1px solid #4a90e2;
+}
+
+th {
+    background-color: #34495e;
+    color: #ecf0f1;
+    padding: 15px;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+td {
+    padding: 15px;
+    background-color: #1e2633;
+    transition: background-color 0.3s ease;
+}
+
+tr:hover td {
+    background-color: rgba(74, 144, 226, 0.1);
+}
+
+#sociogram-button {
+    text-align: center;
+    margin: 30px 0;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+
+    .upload-section, .results-section {
+        padding: 15px;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    .file-input-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .file-input-label {
+        margin-bottom: 10px;
+        margin-right: 0;
+        text-align: center;
+    }
+}
+/* Add these to your existing styles.css */
+.table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    min-width: 500px; /* Ensures readability on smaller screens */
+}
+
+table th, table td {
+    padding: 12px 15px;
+    text-align: left;
+    border: 1px solid #4a90e2;
+}
+
+table thead th {
+    background-color: #34495e;
+    color: #ecf0f1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+table tbody tr:hover {
+    background-color: rgba(74, 144, 226, 0.1);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    table {
+        font-size: 14px;
+    }
+}

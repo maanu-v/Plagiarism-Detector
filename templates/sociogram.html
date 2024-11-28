@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plagiarism Sociogram</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a2b3c;
+            color: #e0e6ed;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        h1 {
+            color: #4a90e2;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .node circle {
+            fill: #4a90e2;  /* Steelblue replaced with our theme blue */
+            stroke: #2c3e50;
+            stroke-width: 1.5px;
+        }
+        
+        .node:hover circle {
+            fill: #357abd;  /* Darker blue on hover */
+        }
+        
+        .link {
+            stroke-opacity: 0.7;
+        }
+        
+        .label {
+            font-size: 12px;
+            text-anchor: middle;
+            pointer-events: none;
+            fill: #e0e6ed;  /* Light text color */
+        }
+        
+        .link-text {
+            font-size: 10px;
+            fill: #e0e6ed;  /* Light text color */
+            pointer-events: none;
+        }
+        
+        .highlight {
+            stroke: #ff6b6b;  /* Bright accent color for highlighting */
+            stroke-width: 2.5px;
+        }
+        
+        .sociogram {
+            height: 100%;
+            width: 100%;
+            background-color: #2c3e50;  /* Dark background for the sociogram */
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Plagiarism Sociogram</h1>
+    <div id="sociogram"></div>
+
+    <script>
+        const results = {{ results | tojson }};
+        console.log("Results for Sociogram:", results);
+
+        function renderSociogram(data) {
+            if (!data || data.length === 0) {
+                d3.select("#sociogram").append("p").text("No data to display.");
+                return;
+            }
+
+            d3.select("#sociogram").selectAll("*").remove();
+
+            const nodes = Array.from(new Set(data.flatMap(d => [d.file1, d.file2]))).map(name => ({ id: name }));
+            const links = data
+                .filter(d => d.similarity > 0) // Only include edges with similarity > 0
+                .map(d => ({
+                    source: d.file1,
+                    target: d.file2,
+                    similarity: d.similarity
+                }));
+
+            const width = 1500;
+            const height = 1500;
+            const radius = 600;
+
+            const svg = d3.select("#sociogram")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+            const colorScale = d3.scaleThreshold()
+                .domain([50, 70, 90])
+                .range(["green", "yellow", "orange", "red"]);
+
+            const angleStep = (2 * Math.PI) / nodes.length;
+            nodes.forEach((node, i) => {
+                node.x = width / 2 + radius * Math.cos(i * angleStep);
+                node.y = height / 2 + radius * Math.sin(i * angleStep);
+            });
+
+            const link = svg.selectAll(".link")
+                .data(links)
+                .enter().append("line")
+                .attr("class", "link")
+                .attr("stroke-width", d => d.similarity / 10)
+                .attr("stroke", d => colorScale(d.similarity))
+                .attr("visibility", "hidden"); // Hide initially
+
+            const linkText = svg.selectAll(".link-text")
+                .data(links)
+                .enter().append("text")
+                .attr("class", "link-text")
+                .attr("x", d => (nodes.find(n => n.id === d.source).x + nodes.find(n => n.id === d.target).x) / 2)
+                .attr("y", d => (nodes.find(n => n.id === d.source).y + nodes.find(n => n.id === d.target).y) / 2)
+                .text(d => `${d.similarity.toFixed(2)}%`)
+                .attr("visibility", "hidden"); // Hide initially
+
+            const node = svg.selectAll(".node")
+                .data(nodes)
+                .enter().append("g")
+                .attr("class", "node")
+                .attr("transform", d => `translate(${d.x},${d.y})`)
+                .on("mouseover", function (event, d) {
+                    // Highlight the hovered node's circle
+                    d3.select(this).select("circle").classed("highlight", true);
+
+                    // Show only the edges and labels connected to the hovered node
+                    link.attr("visibility", l => (l.source === d.id || l.target === d.id) ? "visible" : "hidden");
+                    linkText.attr("visibility", l => (l.source === d.id || l.target === d.id) ? "visible" : "hidden");
+                })
+                .on("mouseout", function () {
+                    // Un-highlight the node
+                    d3.select(this).select("circle").classed("highlight", false);
+
+                    // Hide all edges and labels again
+                    link.attr("visibility", "hidden");
+                    linkText.attr("visibility", "hidden");
+                });
+
+            node.append("circle")
+                .attr("r", 10);
+
+            node.append("text")
+                .attr("dy", -15)
+                .attr("class", "label")
+                .text(d => d.id);
+
+            link
+                .attr("x1", d => nodes.find(n => n.id === d.source).x)
+                .attr("y1", d => nodes.find(n => n.id === d.source).y)
+                .attr("x2", d => nodes.find(n => n.id === d.target).x)
+                .attr("y2", d => nodes.find(n => n.id === d.target).y);
+        }
+
+        renderSociogram(results);
+    </script>
+</body>
+</html>
